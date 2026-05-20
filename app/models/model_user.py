@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Boolean, DateTime
+from sqlalchemy.orm import relationship
 
 from app.models.model_base import BareBaseModel
 
@@ -10,3 +11,10 @@ class User(BareBaseModel):
     is_active = Column(Boolean, default=True)
     role = Column(String(50), default='guest')
     last_login = Column(DateTime)
+
+    cart = relationship(
+        "Cart",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
