@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, Integer, Boolean, Text, JSON
+from sqlalchemy import Column, String, Text, Float, Integer, Boolean
 from sqlalchemy.orm import relationship
 
 from app.models.model_base import BareBaseModel
@@ -11,8 +11,7 @@ class Product(BareBaseModel):
     price = Column(Float, nullable=False, default=0.0)
     inventory = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
-    image_url = Column(String(500), nullable=True)
-    specifications = Column(JSON, nullable=True)
+    image_url = Column(String(255), nullable=True)
+    specifications = Column(Text, nullable=True)
 
     order_items = relationship("OrderItem", back_populates="product")
-    cart_items = relationship("CartItem", back_populates="product")
