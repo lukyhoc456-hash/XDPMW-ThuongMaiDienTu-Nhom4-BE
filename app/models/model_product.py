@@ -15,3 +15,4 @@ class Product(BareBaseModel):
     specifications = Column(Text, nullable=True)
 
     order_items = relationship("OrderItem", back_populates="product")
+    cart_items = relationship("CartItem", back_populates="product")
