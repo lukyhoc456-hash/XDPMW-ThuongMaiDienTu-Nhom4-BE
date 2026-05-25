@@ -36,7 +36,7 @@ class UserRegisterRequest(BaseModel):
     full_name: str
     email: EmailStr
     password: str
-    role: UserRole = UserRole.GUEST
+    role: UserRole = UserRole.ADMIN
 
 
 class UserUpdateMeRequest(BaseModel):

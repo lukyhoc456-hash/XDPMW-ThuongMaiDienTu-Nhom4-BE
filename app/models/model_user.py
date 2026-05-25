@@ -5,8 +5,8 @@ from app.models.model_base import BareBaseModel
 
 
 class User(BareBaseModel):
-    full_name = Column(String(255), index=True)
-    email = Column(String(255), unique=True, index=True)
+    full_name = Column(String(191), index=True)
+    email = Column(String(191), unique=True, index=True)
     hashed_password = Column(String(255))
     is_active = Column(Boolean, default=True)
     role = Column(String(50), default='guest')

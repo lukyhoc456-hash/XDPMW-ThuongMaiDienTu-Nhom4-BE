@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Text
 from sqlalchemy.orm import relationship
 
 from app.models.model_base import BareBaseModel
@@ -12,7 +12,7 @@ class Order(BareBaseModel):
     shipping_address = Column(String(500), nullable=True)
     status = Column(String(50), default='pending')
     total_price = Column(Float, default=0.0)
-    notes = Column(String(), nullable=True)
+    notes = Column(Text, nullable=True)
 
     order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
 
