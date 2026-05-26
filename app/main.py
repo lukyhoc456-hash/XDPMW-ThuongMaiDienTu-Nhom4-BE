@@ -1,7 +1,9 @@
 import logging
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi_sqlalchemy import DBSessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
@@ -28,6 +30,8 @@ def get_application() -> FastAPI:
             - Dockerize
         '''
     )
+    base_dir = Path(__file__).resolve().parents[1]
+    application.mount("/static", StaticFiles(directory=base_dir / "static"), name="static")
     cors_origins = settings.BACKEND_CORS_ORIGINS
     if isinstance(cors_origins, str):
         if cors_origins.startswith("[") and cors_origins.endswith("]"):

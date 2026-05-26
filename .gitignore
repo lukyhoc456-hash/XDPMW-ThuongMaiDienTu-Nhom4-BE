@@ -80,3 +80,6 @@ docker/
 # .DS_Store
 .DS_Store
 */.DS_Store
+app/main.py
+app/main.py
+app/core/config.py
