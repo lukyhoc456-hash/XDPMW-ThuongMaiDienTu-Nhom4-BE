@@ -28,13 +28,33 @@ def get_application() -> FastAPI:
             - Dockerize
         '''
     )
-    application.add_middleware(
-        CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    cors_origins = settings.BACKEND_CORS_ORIGINS
+    if isinstance(cors_origins, str):
+        if cors_origins.startswith("[") and cors_origins.endswith("]"):
+            import json
+            try:
+                allow_origins = json.loads(cors_origins)
+            except Exception:
+                allow_origins = [i.strip() for i in cors_origins.split(",")]
+        else:
+            allow_origins = [i.strip() for i in cors_origins.split(",")]
+    elif isinstance(cors_origins, list):
+        allow_origins = [str(origin) for origin in cors_origins]
+    else:
+        allow_origins = [str(cors_origins)]
+
+    cors_kwargs = {
+        "allow_credentials": True,
+        "allow_methods": ["*"],
+        "allow_headers": ["*"],
+    }
+    if "*" in allow_origins or not allow_origins:
+        logging.warning("CORS: Allowing all origins via regex due to '*' in BACKEND_CORS_ORIGINS")
+        cors_kwargs["allow_origin_regex"] = r"https?://.*"
+    else:
+        cors_kwargs["allow_origins"] = allow_origins
+
+    application.add_middleware(CORSMiddleware, **cors_kwargs)
     application.add_middleware(DBSessionMiddleware, db_url=settings.DATABASE_URL)
     application.include_router(router, prefix=settings.API_PREFIX)
     application.add_exception_handler(CustomException, http_exception_handler)
