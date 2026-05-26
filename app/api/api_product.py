@@ -19,16 +19,20 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 logger = logging.getLogger()
 router = APIRouter()
 
-
+# Get all products
 @router.get('', response_model=Page[ProductItemResponse])
-def list_products(params: PaginationParams = Depends()) -> Any:
+def list_products(
+    params: PaginationParams = Depends(),
+    min_price: float = None,
+    max_price: float = None,
+) -> Any:
     try:
-        query = ProductService.list(active_only=False)
+        query = ProductService.list(active_only=False, min_price=min_price, max_price=max_price)
         return paginate(model=Product, query=query, params=params)
     except Exception as e:
         raise CustomException(http_code=400, code='400', message=str(e))
 
-
+# Get product by ID
 @router.get('/{product_id}', response_model=DataResponse[ProductItemResponse])
 def get_product(product_id: int) -> Any:
     try:

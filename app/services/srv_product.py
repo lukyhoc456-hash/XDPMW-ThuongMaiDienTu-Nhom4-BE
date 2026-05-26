@@ -16,10 +16,14 @@ class ProductService(object):
         return product
 
     @staticmethod
-    def list(active_only: bool = True):
+    def list(active_only: bool = True, min_price: float = None, max_price: float = None):
         query = db.session.query(Product)
         if active_only:
             query = query.filter(Product.is_active == True)
+        if min_price is not None:
+            query = query.filter(Product.price >= min_price)
+        if max_price is not None:
+            query = query.filter(Product.price <= max_price)
         return query.order_by(Product.created_at.desc())
 
     @staticmethod
