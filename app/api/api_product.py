@@ -63,8 +63,9 @@ def upload_product_image(request: Request, file: UploadFile = File(...)) -> Any:
         with file_path.open('wb') as f:
             f.write(file.file.read())
 
-        image_url = request.url_for('static', path=f'uploads/{filename}')
-        return DataResponse().success_response(data={'image_url': str(image_url)})
+        base_url = str(request.base_url).rstrip('/')
+        image_url = f"{base_url}/static/uploads/{filename}"
+        return DataResponse().success_response(data={'image_url': image_url})
     except Exception as e:
         raise CustomException(http_code=400, code='400', message=str(e))
 
