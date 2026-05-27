@@ -1,5 +1,6 @@
+import json
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class ProductBase(BaseModel):
@@ -11,6 +12,24 @@ class ProductBase(BaseModel):
     price: Optional[float] = 0.0
     inventory: Optional[int] = 0
     is_active: Optional[bool] = True
+
+    @validator('specifications', pre=True, always=True)
+    def normalize_specifications(cls, value):
+        if value is None:
+            return value
+        if isinstance(value, str):
+            value = value.strip()
+            if value == '':
+                return '{}'
+            try:
+                json.loads(value)
+                return value
+            except ValueError:
+                return '{}'
+        try:
+            return json.dumps(value)
+        except (TypeError, ValueError):
+            return '{}'
 
     class Config:
         orm_mode = True
