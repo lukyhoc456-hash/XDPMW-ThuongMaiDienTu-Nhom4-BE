@@ -1,12 +1,34 @@
+import json
+
 from fastapi_sqlalchemy import db
 
 from app.models import Product
 from app.schemas.sche_product import ProductCreateRequest, ProductUpdateRequest
 
+DEFAULT_SPECIFICATIONS = '{}'
+
 
 class ProductService(object):
     def __init__(self) -> None:
         pass
+
+    @staticmethod
+    def _normalize_specifications(value):
+        if value is None:
+            return DEFAULT_SPECIFICATIONS
+        if isinstance(value, str):
+            value = value.strip()
+            if value == '':
+                return DEFAULT_SPECIFICATIONS
+            try:
+                json.loads(value)
+                return value
+            except ValueError:
+                return DEFAULT_SPECIFICATIONS
+        try:
+            return json.dumps(value)
+        except (TypeError, ValueError):
+            return DEFAULT_SPECIFICATIONS
 
     @staticmethod
     def get(product_id: int) -> Product:
@@ -33,7 +55,7 @@ class ProductService(object):
             description=data.description,
             category=data.category,
             image_url=data.image_url,
-            specifications=data.specifications,
+            specifications=ProductService._normalize_specifications(data.specifications),
             price=data.price,
             inventory=data.inventory or 0,
             is_active=data.is_active if data.is_active is not None else True,
@@ -51,7 +73,10 @@ class ProductService(object):
         product.description = product.description if data.description is None else data.description
         product.category = product.category if data.category is None else data.category
         product.image_url = product.image_url if data.image_url is None else data.image_url
-        product.specifications = product.specifications if data.specifications is None else data.specifications
+        if data.specifications is None:
+            product.specifications = product.specifications
+        else:
+            product.specifications = ProductService._normalize_specifications(data.specifications)
         product.price = product.price if data.price is None else data.price
         product.inventory = product.inventory if data.inventory is None else data.inventory
         product.is_active = product.is_active if data.is_active is None else data.is_active
