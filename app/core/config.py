@@ -1,6 +1,10 @@
 import os
 from dotenv import load_dotenv
-from pydantic_settings import BaseSettings
+# NOTE: small non-functional change to force a commit when requested by user
+try:
+    from pydantic_settings import BaseSettings
+except ModuleNotFoundError: 
+    from pydantic import BaseSettings
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
 load_dotenv(os.path.join(BASE_DIR, '.env'))
